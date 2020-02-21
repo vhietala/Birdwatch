@@ -13,9 +13,10 @@ const ObservationInput = props => {
   const [birdRarity, setBirdRarity] = useState('');
   const [birdNote, setBirdNote] = useState('');
   const [birdPicture, setBirdPicture] = useState('');
+  const [birdDate, setBirdDate] = useState('');
 
-  updateRarity = rarity => {
-    this.setBirdRarity(rarity);
+  const updateRarityHandler = rarity => {
+    setBirdRarity(rarity);
   };
 
   const observationInputHandler = birdName => {
@@ -26,10 +27,22 @@ const ObservationInput = props => {
     setBirdNote(birdNote);
   };
 
+  const dateHandler = () => {
+    const date = new Date().getDate();
+    birdDate = date;
+  };
+
   const addObservationHandler = () => {
-    props.onAddObservation(birdName, birdRarity, birdNote, birdPicture);
+    dateHandler();
+    props.onAddObservation(
+      birdName,
+      birdRarity,
+      birdNote,
+      birdPicture,
+      birdDate
+    );
     setBirdName('');
-    setBirdRarity('common');
+    setBirdRarity('1');
     setBirdNote('');
     setBirdPicture('');
   };
@@ -43,12 +56,16 @@ const ObservationInput = props => {
           onChangeText={observationInputHandler}
           value={birdName}
         />
-
-        <Picker selectedValue={birdRarity} onValueChange={updateRarity}>
-          <Picker.Item label="Common" value="common" />
-          <Picker.Item label="Rare" value="rare" />
-          <Picker.Item label="Extremely Rare" value="extremely rare" />
-        </Picker>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={birdRarity}
+            onValueChange={updateRarityHandler}
+          >
+            <Picker.Item label="Common" value={1} />
+            <Picker.Item label="Rare" value={2} />
+            <Picker.Item label="Extremely Rare" value={3} />
+          </Picker>
+        </View>
         <View>
           <TextInput
             placeholder="Note"
@@ -75,7 +92,8 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: 20
   },
   input: {
     width: '80%',
@@ -84,7 +102,14 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10
   },
-  noteInput: {},
+  noteInput: {
+    borderWidth: 1,
+    minWidth: '80%',
+    minHeight: '30%',
+    alignItems: 'baseline',
+    justifyContent: 'flex-start',
+    marginBottom: 10
+  },
   buttonContailer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -93,6 +118,11 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '40%'
+  },
+  pickerContainer: {
+    width: 150,
+    borderWidth: 1,
+    marginBottom: 15
   }
 });
 export default ObservationInput;

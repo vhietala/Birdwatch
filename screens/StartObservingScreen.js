@@ -5,26 +5,28 @@ import ObservationItem from '../components/ObservationItem';
 import ObservationInput from '../components/ObservationInput';
 
 const StartObservingScreen = props => {
-  const [observations, setNewObservation] = useState([]);
+  const [observations, setNewObservations] = useState([]);
   const [isAddMode, setIsAddMode] = useState(false);
 
   const addObservationHandler = (
     birdName,
     birdRarity,
     birdNote,
-    birdPicture
+    birdPicture,
+    birdDate
   ) => {
     if (birdName.length === 0) {
       return;
     }
-    setNewObservation(currentObservations => [
+    setNewObservations(currentObservations => [
       ...currentObservations,
       {
         id: Math.random().toString(),
         name: birdName,
         rarity: birdRarity,
         note: birdNote,
-        picture: birdPicture
+        picture: birdPicture,
+        date: birdDate
       }
     ]);
     setIsAddMode(false);
@@ -35,7 +37,7 @@ const StartObservingScreen = props => {
   };
 
   const removeObservationHandler = observationId => {
-    setObservations(currentObservations => {
+    setNewObservations(currentObservations => {
       return currentObservations.filter(
         observation => observation.id !== observationId
       );
@@ -64,6 +66,8 @@ const StartObservingScreen = props => {
               onDelete={removeObservationHandler}
               name={itemData.item.name}
               rarity={itemData.item.rarity}
+              date={itemData.item.date}
+              picture={itemData.item.picture}
             />
           )}
         />
