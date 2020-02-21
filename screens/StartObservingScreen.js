@@ -3,6 +3,7 @@ import { Button, View, StyleSheet, FlatList } from 'react-native';
 
 import ObservationItem from '../components/ObservationItem';
 import ObservationInput from '../components/ObservationInput';
+import MyButton from '../components/MyButton';
 
 const StartObservingScreen = props => {
   const [observations, setNewObservations] = useState([]);
@@ -46,11 +47,9 @@ const StartObservingScreen = props => {
 
   return (
     <View style={styles.screen}>
-      <Button
-        title="Add Observation"
-        color="green"
-        onPress={() => setIsAddMode(true)}
-      />
+      <MyButton style={styles.addButton} onPress={() => setIsAddMode(true)}>
+        Add Observation
+      </MyButton>
       <ObservationInput
         visible={isAddMode}
         onAddObservation={addObservationHandler}
@@ -80,6 +79,9 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 20
+  },
+  addButton: {
+    backgroundColor: 'green'
   }
 });
 

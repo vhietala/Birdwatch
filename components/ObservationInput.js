@@ -29,7 +29,7 @@ const ObservationInput = props => {
 
   const dateHandler = () => {
     const date = new Date().getDate();
-    birdDate = date;
+    setBirdDate(date);
   };
 
   const addObservationHandler = () => {
