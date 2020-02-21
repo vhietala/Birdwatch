@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { Button, View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 
 import ObservationItem from '../components/ObservationItem';
 import ObservationInput from '../components/ObservationInput';
+import DetailedObservation from '../components/DetailedObservation';
 import MyButton from '../components/MyButton';
 
 const StartObservingScreen = props => {
   const [observations, setNewObservations] = useState([]);
   const [isAddMode, setIsAddMode] = useState(false);
+  const [isDetailedMode, setIsDetailedMode] = useState(false);
+
+  const [selectedName, setSelectedName] = useState();
+  const [selectedRarity, setSelectedRarity] = useState();
+  const [selectedPicture, setSelectedPicture] = useState();
+  const [selectedDate, setSelectedDate] = useState();
+  const [selectedNote, setSelectedNote] = useState();
 
   const addObservationHandler = (
     birdName,
@@ -45,15 +53,47 @@ const StartObservingScreen = props => {
     });
   };
 
+  const detailedObservationHandler = observationId => {
+    console.log(observationId);
+    console.log(observations);
+    let currentObservation = observations.filter(observation => {
+      return observation.id === observationId;
+    });
+    const current = currentObservation[0];
+    console.log('current' + current.name);
+    setSelectedDate(current.date);
+    setSelectedName(current.name);
+    setSelectedPicture(current.picture);
+    setSelectedNote(current.note);
+    console.log('Rarity: ' + current.rarity);
+    setSelectedRarity(current.rarity);
+    console.log(selectedRarity);
+    setIsDetailedMode(true);
+  };
+
+  const detailedObservationClosingHandler = () => {
+    setIsDetailedMode(false);
+  };
+
   return (
     <View style={styles.screen}>
       <MyButton style={styles.addButton} onPress={() => setIsAddMode(true)}>
-        Add Observation
+        Add
       </MyButton>
       <ObservationInput
         visible={isAddMode}
         onAddObservation={addObservationHandler}
         onCancel={cancelObservationAdditionHandler}
+      />
+      <DetailedObservation
+        date={selectedDate}
+        name={selectedName}
+        note={selectedNote}
+        picture={selectedPicture}
+        rarity={selectedRarity}
+        visible={isDetailedMode}
+        onRemoveObservation={removeObservationHandler}
+        onClose={detailedObservationClosingHandler}
       />
       <View>
         <FlatList
@@ -67,6 +107,7 @@ const StartObservingScreen = props => {
               rarity={itemData.item.rarity}
               date={itemData.item.date}
               picture={itemData.item.picture}
+              onOpen={detailedObservationHandler}
             />
           )}
         />
@@ -81,6 +122,7 @@ const styles = StyleSheet.create({
     padding: 20
   },
   addButton: {
+    alignItems: 'center',
     backgroundColor: 'green'
   }
 });

@@ -7,6 +7,9 @@ import {
   Modal,
   Picker
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
 
 const ObservationInput = props => {
   const [birdName, setBirdName] = useState('');
@@ -14,6 +17,7 @@ const ObservationInput = props => {
   const [birdNote, setBirdNote] = useState('');
   const [birdPicture, setBirdPicture] = useState('');
   const [birdDate, setBirdDate] = useState('');
+  const [image, setImage] = useState(null);
 
   const updateRarityHandler = rarity => {
     setBirdRarity(rarity);
@@ -21,6 +25,7 @@ const ObservationInput = props => {
 
   const observationInputHandler = birdName => {
     setBirdName(birdName);
+    dateHandler();
   };
 
   const observationNoteInputHandler = birdNote => {
@@ -28,8 +33,12 @@ const ObservationInput = props => {
   };
 
   const dateHandler = () => {
-    const date = new Date().getDate();
-    setBirdDate(date);
+    const date = new Date().getDate(); //Current Date
+    const month = new Date().getMonth() + 1; //Current Month
+    const year = new Date().getFullYear(); //Current Year
+    const hours = new Date().getHours(); //Current Hours
+    const min = new Date().getMinutes(); //Current Minutes
+    setBirdDate(date + '/' + month + '/' + year + ' ' + hours + ':' + min);
   };
 
   const addObservationHandler = () => {
@@ -42,45 +51,68 @@ const ObservationInput = props => {
       birdDate
     );
     setBirdName('');
-    setBirdRarity('1');
+    setBirdRarity(1);
     setBirdNote('');
     setBirdPicture('');
   };
 
+  _pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setBirdPicture({ image: result.uri });
+    }
+  };
+
   return (
     <Modal visible={props.visible} animationType="slide">
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Bird name"
-          style={styles.input}
-          onChangeText={observationInputHandler}
-          value={birdName}
-        />
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={birdRarity}
-            onValueChange={updateRarityHandler}
-          >
-            <Picker.Item label="Common" value={1} />
-            <Picker.Item label="Rare" value={2} />
-            <Picker.Item label="Extremely Rare" value={3} />
-          </Picker>
-        </View>
-        <View>
+      <View style={styles.screen}>
+        <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Note"
-            style={styles.noteInput}
-            onChangeText={observationNoteInputHandler}
-            value={birdNote}
-            multiline={true}
+            placeholder="Bird name"
+            style={styles.input}
+            onChangeText={observationInputHandler}
+            value={birdName}
           />
-        </View>
-        <View style={styles.buttonContailer}>
-          <View style={styles.button}>
-            <Button title="CANCEL" color="red" onPress={props.onCancel} />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={birdRarity}
+              onValueChange={updateRarityHandler}
+            >
+              <Picker.Item label="Common" value={1} />
+              <Picker.Item label="Rare" value={2} />
+              <Picker.Item label="Extremely Rare" value={3} />
+            </Picker>
           </View>
-          <View style={styles.button}>
-            <Button title="SAVE" onPress={addObservationHandler} />
+          <View>
+            <TextInput
+              placeholder="Note"
+              style={styles.noteInput}
+              onChangeText={observationNoteInputHandler}
+              value={birdNote}
+              multiline={true}
+            />
+          </View>
+          <Button
+            title="Pick image"
+            onPress={_pickImage}
+            style={styles.imageButton}
+          />
+          {image && <Image source={{ uri: image }} style={styles.image} />}
+          <View style={styles.buttonContailer}>
+            <View style={styles.button}>
+              <Button title="CANCEL" color="red" onPress={props.onCancel} />
+            </View>
+            <View style={styles.button}>
+              <Button title="SAVE" onPress={addObservationHandler} />
+            </View>
           </View>
         </View>
       </View>
@@ -89,11 +121,15 @@ const ObservationInput = props => {
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1
+  },
   inputContainer: {
     flex: 1,
+    marginVertical: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 100
   },
   input: {
     width: '80%',
@@ -110,11 +146,16 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginBottom: 10
   },
+  imageButton: {
+    flex: 1,
+    margin: 15
+  },
   buttonContailer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '60%',
-    height: '50%'
+    height: '50%',
+    marginVertical: 15
   },
   button: {
     width: '40%'
