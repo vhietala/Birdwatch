@@ -5,9 +5,6 @@ import ObservationItem from '../components/ObservationItem';
 import ObservationInput from '../components/ObservationInput';
 import DetailedObservation from '../components/DetailedObservation';
 import MyButton from '../components/MyButton';
-import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
-
-const STORAGE_KEY = '@save_name';
 
 const StartObservingScreen = props => {
   const [observations, setNewObservations] = useState([]);
@@ -143,17 +140,15 @@ const StartObservingScreen = props => {
       </View>
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    padding: 20
-  },
-  addButton: {
-    alignItems: 'center',
-    backgroundColor: 'green'
-  }
-});
+          };
+  const styles = StyleSheet.create({
+    screen: {
+      flex: 1,
+      padding: 20
+    },
+    addButton: {
+      alignItems: 'center',
+      backgroundColor: 'green'
+    }
 
 export default StartObservingScreen;
