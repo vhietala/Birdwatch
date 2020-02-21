@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Component } from 'react';
 import { View, StyleSheet, FlatList, AsyncStorage } from 'react-native';
 
 import ObservationItem from '../components/ObservationItem';
@@ -55,26 +55,46 @@ const StartObservingScreen = props => {
     saveDataHandler();
   };
 
-  const saveDataHandler = async observation => {
+  const saveDataHandler = async () => {
+    console.log('trying to save');
+    let observationsForSaving = JSON.stringify(this.observations);
     try {
-      console.log('saving');
-      await AsyncStorage.setItem(STORAGE_KEY, observation);
-      alert('Data saved!');
-      setNewObservations({ observation });
-    } catch (e) {
-      alert('Saving failed');
+      let data = this.StaticRange.data;
+      await AsyncStorage.setItem('data', JSON.stringify(data));
+      await AsyncStorage.multiSet(observationsForSaving, () => {
+        console.log('Saved data with multiset method');
+      });
+      console.log('Data saved in AsyncStorage');
+    } catch (error) {
+      console.log('Async storage set data error', error.message);
     }
   };
 
   const loadDataHandler = async () => {
     try {
-      const name = await AsyncStorage.getItem(STORAGE_KEY);
-
-      if (name !== null) {
-        setNewObservations({ id });
+      let data = await AsyncStorage.getItem('data');
+      if (data === null) {
+        data = this.initData;
+        await AsyncStorage.setItem('data', JSON.stringify(data));
+        this.ListeningStateChangedEvent({ data: data });
+        return;
       }
-    } catch (e) {
-      alert('Failed to load name.');
+      data = JSON.parse(data);
+      this.setNewObservations({ data: data });
+      let keys = this.observations;
+      AsyncStorage.multiGet(keys, (err, stores) => {
+        stores.map((result, i, store) => {
+          let key = store[i][0]; //return one key
+          let value = store[i][1]; //return value for key
+          let multiGet = result; //return key and it's value
+          console.log('result', result);
+          console.log('key, value', key, value);
+          // Now You can do something with result
+        });
+      });
+      //console.log('Data got from AsyncStorage successfully');
+    } catch (error) {
+      console.log('AsyncStorage get data error', error.message);
     }
   };
 
@@ -127,6 +147,7 @@ const StartObservingScreen = props => {
           data={observations}
           renderItem={itemData => (
             <ObservationItem
+              onOpen={loadDataHandler}
               id={itemData.item.id}
               onDelete={removeObservationHandler}
               name={itemData.item.name}
@@ -140,15 +161,16 @@ const StartObservingScreen = props => {
       </View>
     </View>
   );
-          };
-  const styles = StyleSheet.create({
-    screen: {
-      flex: 1,
-      padding: 20
-    },
-    addButton: {
-      alignItems: 'center',
-      backgroundColor: 'green'
-    }
+};
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    padding: 20
+  },
+  addButton: {
+    alignItems: 'center',
+    backgroundColor: 'green'
+  }
+});
 
 export default StartObservingScreen;

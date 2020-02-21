@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Card from './Card';
 import MyButton from './MyButton';
 
@@ -19,6 +19,12 @@ const ObservationItem = props => {
         <View style={styles.cardItemContainer}>
           <View style={styles.textContainer}>
             <Text>{props.date.toString()}</Text>
+            {
+              <Image
+                source={{ uri: props.picture.localUri }}
+                style={styles.image}
+              />
+            }
           </View>
 
           <View style={styles.textContainer}>
@@ -54,6 +60,10 @@ const styles = StyleSheet.create({
   delButton: {
     justifyContent: 'center',
     backgroundColor: 'red'
+  },
+  image: {
+    width: 60,
+    height: 30
   }
 });
 export default ObservationItem;

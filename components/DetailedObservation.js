@@ -8,13 +8,11 @@ const DetailedObservation = props => {
       <View style={styles.screen}>
         <Text style={styles.heading}>{props.name}</Text>
         <View style={styles.imageContainer}>
-          {
-            <Image
-              source={{ url: props.picture }}
+          {/*             <Image
+              source={{ uri: props.picture }}
               style={styles.image}
               resizeMode="cover"
-            />
-          }
+            /> */}
         </View>
         <Text>{props.date}</Text>
         <Text>{props.note}</Text>
