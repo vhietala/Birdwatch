@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Button, FlatList } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import Header from './components/Header';
 import StartObservingScreen from './screens/StartObservingScreen';

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet, FlatList, AsyncStorage } from 'react-native';
 
 import ObservationItem from '../components/ObservationItem';
 import ObservationInput from '../components/ObservationInput';
 import DetailedObservation from '../components/DetailedObservation';
 import MyButton from '../components/MyButton';
+import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+
+const STORAGE_KEY = '@save_name';
 
 const StartObservingScreen = props => {
   const [observations, setNewObservations] = useState([]);
@@ -38,6 +41,7 @@ const StartObservingScreen = props => {
         date: birdDate
       }
     ]);
+    saveDataHandler();
     setIsAddMode(false);
   };
 
@@ -51,6 +55,30 @@ const StartObservingScreen = props => {
         observation => observation.id !== observationId
       );
     });
+    saveDataHandler();
+  };
+
+  const saveDataHandler = async observation => {
+    try {
+      console.log('saving');
+      await AsyncStorage.setItem(STORAGE_KEY, observation);
+      alert('Data saved!');
+      setNewObservations({ observation });
+    } catch (e) {
+      alert('Saving failed');
+    }
+  };
+
+  const loadDataHandler = async () => {
+    try {
+      const name = await AsyncStorage.getItem(STORAGE_KEY);
+
+      if (name !== null) {
+        setNewObservations({ id });
+      }
+    } catch (e) {
+      alert('Failed to load name.');
+    }
   };
 
   const detailedObservationHandler = observationId => {
@@ -98,6 +126,7 @@ const StartObservingScreen = props => {
       <View>
         <FlatList
           keyExtractor={(item, index) => item.id}
+          async
           data={observations}
           renderItem={itemData => (
             <ObservationItem
